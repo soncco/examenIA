@@ -13,7 +13,7 @@ async function readResults(): Promise<ExamResult[]> {
   if (IS_NETLIFY) {
     const { getStore } = await import('@netlify/blobs');
     const store = getStore('results');
-    const raw = await store.get(BLOB_KEY);
+    const raw = await store.get(BLOB_KEY, { type: 'text' });
     if (!raw) return [];
     return JSON.parse(raw) as ExamResult[];
   }
