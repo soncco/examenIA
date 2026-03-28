@@ -1,13 +1,695 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examen — Inteligencia Artificial</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 55%, #24243e 100%);
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+      color: #2d3748;
+    }
+
+    /* ── Screen switcher ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Card ── */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 740px;
+      margin: 0 auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      animation: fadeUp .35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Home ── */
+    .home-header { text-align: center; margin-bottom: 40px; }
+    .home-header .hero-icon { font-size: 70px; margin-bottom: 14px; }
+    .home-header h1 { font-size: 26px; color: #1a1a2e; margin-bottom: 8px; }
+    .home-header p  { color: #718096; font-size: 14px; }
+
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    .role-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none; border-radius: 16px;
+      padding: 32px 20px; text-align: center;
+      cursor: pointer; color: #fff;
+      font-family: inherit;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .role-btn:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(102,126,234,.45); }
+    .role-btn.teacher { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .role-btn.teacher:hover { box-shadow: 0 14px 40px rgba(245,87,108,.45); }
+    .role-btn .ri { font-size: 52px; margin-bottom: 12px; }
+    .role-btn h2  { font-size: 20px; margin-bottom: 5px; }
+    .role-btn p   { font-size: 13px; opacity: .85; }
+
+    /* ── Titles ── */
+    .sec-title { text-align: center; margin-bottom: 30px; }
+    .sec-title h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 6px; }
+    .sec-title p  { color: #a0a0a0; font-size: 13px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-weight: 600; font-size: 13px; color: #4a5568; margin-bottom: 7px; }
+    .form-group input {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid #e2e8f0; border-radius: 10px;
+      font-size: 15px; font-family: inherit;
+      outline: none; transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: #667eea; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 13px 26px; border-radius: 10px; border: none;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: opacity .2s, transform .15s;
+    }
+    .btn:hover { opacity: .92; transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; width: 100%; }
+    .btn-ghost   { background: #f0f2f7; color: #4a5568; }
+    .btn-green   { background: linear-gradient(135deg,#43e97b,#38f9d7); color: #1a1a2e; }
+    .btn-red     { background: linear-gradient(135deg,#f093fb,#f5576c); color: #fff; }
+
+    /* ── Back link ── */
+    .back-btn {
+      background: none; border: none; cursor: pointer;
+      color: #667eea; font-size: 14px; font-family: inherit;
+      padding: 0; margin-bottom: 22px;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .back-btn:hover { text-decoration: underline; }
+
+    /* ── Alert ── */
+    .alert {
+      padding: 11px 15px; border-radius: 9px; font-size: 13px;
+      margin-bottom: 14px; display: none;
+    }
+    .alert-err { background: #fff0f2; color: #c0392b; border: 1px solid #f5c6cb; }
+
+    /* ── Progress bar ── */
+    .exam-meta { display: flex; justify-content: space-between; font-size: 13px; color: #718096; margin-bottom: 6px; }
+    .prog-bar  { height: 8px; background: #e2e8f0; border-radius: 99px; margin-bottom: 32px; overflow: hidden; }
+    .prog-fill { height: 100%; background: linear-gradient(90deg,#667eea,#764ba2); border-radius: 99px; transition: width .4s ease; }
+
+    /* ── Question card ── */
+    .q-card {
+      background: #f8f9ff;
+      border: 2px solid #e8eaf6;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .q-num  { font-size: 11px; font-weight: 700; color: #667eea; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 9px; }
+    .q-text { font-size: 15px; font-weight: 600; color: #1a1a2e; line-height: 1.55; margin-bottom: 16px; }
+
+    .opts { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .opt label {
+      display: flex; align-items: flex-start; gap: 11px;
+      padding: 11px 14px; border: 2px solid #e0e0e0; border-radius: 10px;
+      cursor: pointer; background: #fff; font-size: 14px; line-height: 1.4;
+      transition: border-color .15s, background .15s;
+    }
+    .opt label:hover { border-color: #667eea; background: #f0f2ff; }
+    .opt input[type=radio] { width: 16px; height: 16px; accent-color: #667eea; flex-shrink: 0; margin-top: 2px; }
+    .opt:has(input:checked) label { border-color: #667eea; background: #eef0ff; }
+
+    /* Review states */
+    .opt.rv-correct label { border-color: #48bb78; background: #f0fff4; cursor: default; }
+    .opt.rv-wrong   label { border-color: #f56565; background: #fff5f5; cursor: default; }
+
+    /* ── Result ── */
+    .score-wrap { text-align: center; padding: 20px 0 28px; }
+    .score-circle {
+      width: 140px; height: 140px; border-radius: 50%;
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 20px; color: #fff;
+      box-shadow: 0 12px 40px rgba(102,126,234,.35);
+    }
+    .score-num { font-size: 48px; font-weight: 700; line-height: 1; }
+    .score-denom { font-size: 16px; opacity: .8; }
+    .score-msg  { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 5px; }
+    .score-sub  { color: #a0aec0; font-size: 14px; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 24px 0; }
+    .stat-box  { background: #f8f9ff; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-val  { font-size: 30px; font-weight: 700; color: #667eea; }
+    .stat-lbl  { font-size: 12px; color: #a0aec0; margin-top: 4px; }
+
+    /* ── Teacher dashboard ── */
+    .dash-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; flex-wrap: wrap; gap: 10px; }
+    .dash-head h2 { font-size: 22px; color: #1a1a2e; }
+    .dash-head p  { color: #a0aec0; font-size: 13px; margin-top: 3px; }
+
+    .results-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 22px; }
+    .results-table th {
+      background: #f7f8fc; padding: 11px 13px; text-align: left;
+      font-weight: 700; color: #718096; border-bottom: 2px solid #e8eaf6;
+      font-size: 11px; text-transform: uppercase; letter-spacing: .6px;
+    }
+    .results-table td { padding: 11px 13px; border-bottom: 1px solid #f0f0f5; color: #2d3748; }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:hover td { background: #fafbff; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+    .badge-ok   { background: #c6f6d5; color: #276749; }
+    .badge-fail { background: #fed7d7; color: #9b2c2c; }
+
+    .empty-state { text-align: center; padding: 40px; color: #c0c0c0; }
+    .empty-state .ei { font-size: 52px; margin-bottom: 12px; }
+
+    .action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .action-row .btn { flex: 1; min-width: 150px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .card { padding: 24px 18px; }
+      .role-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .results-table { font-size: 11px; }
+      .results-table th, .results-table td { padding: 8px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HOME ════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="card">
+    <div class="home-header">
+      <div class="hero-icon">🤖</div>
+      <h1>Examen de Inteligencia Artificial</h1>
+      <p>10 preguntas &nbsp;·&nbsp; 2 puntos cada una &nbsp;·&nbsp; Total 20 puntos</p>
+    </div>
+    <div class="role-grid">
+      <button class="role-btn" onclick="go('s-student-reg')">
+        <div class="ri">👨‍🎓</div>
+        <h2>Alumno</h2>
+        <p>Rinde el examen</p>
+      </button>
+      <button class="role-btn teacher" onclick="go('s-teacher-login')">
+        <div class="ri">👩‍🏫</div>
+        <h2>Docente</h2>
+        <p>Revisa los resultados</p>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ ALUMNO — REGISTRO ════════════════════════════ -->
+<div id="s-student-reg" class="screen">
+  <div class="card">
+    <button class="back-btn" onclick="go('s-home')">← Volver</button>
+    <div class="sec-title">
+      <h2>👨‍🎓 Datos del alumno</h2>
+      <p>Completa tu información antes de iniciar el examen</p>
+    </div>
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input id="inp-name" type="text" placeholder="Ej: Lucía Fernández"
+             onkeydown="if(event.key==='Enter')document.getElementById('inp-career').focus()" />
+    </div>
+    <div class="form-group">
+      <label>Carrera</label>
+      <input id="inp-career" type="text" placeholder="Ej: Ingeniería en Sistemas"
+             onkeydown="if(event.key==='Enter')startExam()" />
+    </div>
+    <div id="reg-err" class="alert alert-err">Por favor completa todos los campos.</div>
+    <button class="btn btn-primary" onclick="startExam()">Iniciar Examen →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ EXAMEN ════════════════════════════ -->
+<div id="s-exam" class="screen">
+  <div class="card">
+    <div class="exam-meta">
+      <span id="exam-sname"></span>
+      <span>10 preguntas · 20 puntos</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div id="q-container"></div>
+    <div id="exam-err" class="alert alert-err">Por favor responde todas las preguntas antes de enviar.</div>
+    <button class="btn btn-primary" onclick="submitExam()" style="margin-top:20px">Enviar Examen ✓</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ RESULTADO ════════════════════════════ -->
+<div id="s-result" class="screen">
+  <div class="card">
+    <div class="score-wrap">
+      <div class="score-circle" id="r-circle">
+        <div class="score-num" id="r-num">0</div>
+        <div class="score-denom">/20</div>
+      </div>
+      <div class="score-msg" id="r-msg"></div>
+      <div class="score-sub" id="r-sub"></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="r-ok"  style="color:#48bb78">0</div><div class="stat-lbl">Correctas</div></div>
+      <div class="stat-box"><div class="stat-val" id="r-bad" style="color:#f56565">0</div><div class="stat-lbl">Incorrectas</div></div>
+      <div class="stat-box"><div class="stat-val" id="r-pct" style="color:#667eea">0%</div><div class="stat-lbl">Porcentaje</div></div>
+    </div>
+    <h3 style="color:#1a1a2e;margin-bottom:16px">Revisión de respuestas</h3>
+    <div id="review-container"></div>
+    <button class="btn btn-ghost" onclick="resetStudent()" style="margin-top:18px;width:100%">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ DOCENTE — LOGIN ════════════════════════════ -->
+<div id="s-teacher-login" class="screen">
+  <div class="card">
+    <button class="back-btn" onclick="go('s-home')">← Volver</button>
+    <div class="sec-title">
+      <h2>👩‍🏫 Acceso Docente</h2>
+      <p>Ingresa tu clave de acceso</p>
+    </div>
+    <div class="form-group">
+      <label>Clave de acceso</label>
+      <input id="t-pass" type="password" placeholder="••••"
+             onkeydown="if(event.key==='Enter')teacherLogin()" />
+    </div>
+    <div id="t-err" class="alert alert-err">Clave incorrecta. Inténtalo nuevamente.</div>
+    <button class="btn btn-primary" onclick="teacherLogin()">Ingresar →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ DOCENTE — DASHBOARD ════════════════════════════ -->
+<div id="s-teacher-dash" class="screen">
+  <div class="card">
+    <div class="dash-head">
+      <div>
+        <h2>📊 Panel Docente</h2>
+        <p>Resultados — Examen de Inteligencia Artificial</p>
+      </div>
+      <button class="btn btn-ghost" onclick="teacherLogout()">Cerrar sesión</button>
+    </div>
+    <div id="dash-content"></div>
+    <div class="action-row">
+      <button class="btn btn-green" onclick="downloadCSV()">⬇ Descargar CSV</button>
+      <button class="btn btn-red"   onclick="clearResults()">🗑 Limpiar resultados</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ SCRIPT ════════════════════════════ -->
+<script>
+// ── Constantes ──────────────────────────────────────────────────
+const TEACHER_CODE = 'BRAU';
+const STORAGE_KEY  = 'ia_exam_results_v1';
+
+// ── Preguntas ────────────────────────────────────────────────────
+const QUESTIONS = [
+  {
+    text: "¿Cuáles son los 'Tres Ingredientes Esenciales' que definen verdaderamente el diseño y potencial de un Agente de IA?",
+    opts: [
+      { t: "LLM, Memoria y Schemas",                      ok: true  },
+      { t: "Cerebro (LLM), Prompt y Herramientas (Tools)", ok: false },
+      { t: "Knowledge, Prompting y Tools",                 ok: false },
+      { t: "APIs, Internet y Chatbot",                     ok: false }
+    ]
+  },
+  {
+    text: "¿Qué subcampo de la IA utiliza redes neuronales con muchas capas para tareas complejas como la detección de objetos?",
+    opts: [
+      { t: "Machine Learning (ML)", ok: false },
+      { t: "IA Débil (Estrecha)",   ok: false },
+      { t: "IA Generativa",         ok: false },
+      { t: "Deep Learning (DL)",    ok: true  }
+    ]
+  },
+  {
+    text: "En el 'Flujo de Ejecución' de un Agente de IA, ¿cuál es el paso donde 'Comprueba la respuesta y reflexiona sobre el resultado'?",
+    opts: [
+      { t: "Lee",      ok: false },
+      { t: "Planifica", ok: false },
+      { t: "Actúa",    ok: false },
+      { t: "Verifica", ok: true  }
+    ]
+  },
+  {
+    text: "Un Agente de IA puede 'agendar citas, enviar confirmaciones y actualizar calendarios automáticamente'. ¿Por qué no podría un Chatbot hacer esto?",
+    opts: [
+      { t: "Porque el Chatbot no tiene Prompt.",                                                                           ok: false },
+      { t: "Porque el Chatbot carece de un LLM potente.",                                                                  ok: false },
+      { t: "Porque el Chatbot solo responde preguntas predefinidas sin ejecutar acciones en sistemas externos.",            ok: true  },
+      { t: "Porque el Agente de IA es gratuito y el Chatbot no.",                                                          ok: false }
+    ]
+  },
+  {
+    text: "Un error común en prompting es...:",
+    opts: [
+      { t: "Dar demasiado contexto.",                          ok: false },
+      { t: "Ser ambiguo y dejar detalles sin especificar.",    ok: true  },
+      { t: "Especificar el formato del resultado.",             ok: false },
+      { t: "Iterar sobre la respuesta de la IA.",              ok: false }
+    ]
+  },
+  {
+    text: "En la arquitectura del Modelo Transformer, ¿qué es la 'Tokenización'?",
+    opts: [
+      { t: "El paso donde el modelo 'presta atención' a las partes más relevantes.", ok: false },
+      { t: "La generación de una respuesta coherente.",                              ok: false },
+      { t: "La división del texto fuente en unidades procesables (tokens).",         ok: true  },
+      { t: "La transformación de texto en una imagen.",                              ok: false }
+    ]
+  },
+  {
+    text: "Un Agente Automatizado se diferencia de un Agente Conversacional porque:",
+    opts: [
+      { t: "Solo interactúa por voz.",                                                                                         ok: false },
+      { t: "Requiere intervención humana constante para cada tarea.",                                                           ok: false },
+      { t: "Interactúa directamente con humanos por WhatsApp o Instagram.",                                                    ok: false },
+      { t: "No requiere interacción directa y se activa por eventos (nuevo correo, horario) funcionando en segundo plano.",    ok: true  }
+    ]
+  },
+  {
+    text: "Para mejorar la relevancia y reducir errores en el output de la IA, la ingeniería de prompts recomienda:",
+    opts: [
+      { t: "Limitar el contexto al mínimo para que la IA sea creativa.",                        ok: false },
+      { t: "Ser Específico, detallando la asignatura, el nivel o el formato esperado.",          ok: true  },
+      { t: "Iniciar un chat nuevo después de cada iteración.",                                   ok: false },
+      { t: "Usar solo el 'Mecanismo de Atención' de la IA.",                                    ok: false }
+    ]
+  },
+  {
+    text: "¿Cuál es la función del método POST en el contexto de las APIs que utilizan los agentes?",
+    opts: [
+      { t: "Obtiene información del servidor (datos, documentos, consultas).",                          ok: false },
+      { t: "Envía información al servidor para crear registros, actualizar datos o ejecutar acciones.", ok: true  },
+      { t: "Verifica si la respuesta de la API fue exitosa.",                                           ok: false },
+      { t: "Procesa los datos para convertirlos en tokens.",                                            ok: false }
+    ]
+  },
+  {
+    text: "El principio ético de Transparencia en la IA implica:",
+    opts: [
+      { t: "Evitar decisiones injustas o discriminatorias en los modelos.",  ok: false },
+      { t: "Asegurar que se pueda entender cómo decide un modelo.",          ok: true  },
+      { t: "Manejar responsablemente los datos personales según la ley.",    ok: false },
+      { t: "Considerar el alto uso energético de los grandes modelos.",      ok: false }
+    ]
+  }
+];
+
+// ── Estado ───────────────────────────────────────────────────────
+let student = { name: '', career: '' };
+let examQuestions = [];   // questions with shuffled options
+
+// ── Navegación ───────────────────────────────────────────────────
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    // re-trigger animation on next activation
+    s.querySelectorAll('.card').forEach(c => { c.style.animation = 'none'; });
+  });
+  const screen = document.getElementById(id);
+  screen.classList.add('active');
+  screen.querySelectorAll('.card').forEach(c => {
+    void c.offsetWidth; // reflow
+    c.style.animation = '';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Utilidades ───────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getResults() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+function saveResult(r) {
+  const list = getResults();
+  list.push(r);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+// ── Flujo Alumno ──────────────────────────────────────────────────
+function startExam() {
+  const name   = document.getElementById('inp-name').value.trim();
+  const career = document.getElementById('inp-career').value.trim();
+  const err    = document.getElementById('reg-err');
+
+  if (!name || !career) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  student = { name, career };
+  examQuestions = shuffle(QUESTIONS).map(q => ({ ...q, shuffledOpts: shuffle(q.opts) }));
+
+  buildExam();
+  document.getElementById('exam-sname').textContent = '👨‍🎓 ' + name;
+  go('s-exam');
+}
+
+function buildExam() {
+  const container = document.getElementById('q-container');
+  container.innerHTML = '';
+
+  examQuestions.forEach((q, qi) => {
+    const optsHTML = q.shuffledOpts.map((opt, oi) => `
+      <li class="opt">
+        <label>
+          <input type="radio" name="q${qi}" value="${oi}" onchange="onAnswer(${qi})">
+          <span>${esc(opt.t)}</span>
+        </label>
+      </li>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-num">Pregunta ${qi + 1} de ${examQuestions.length} · 2 puntos</div>
+      <div class="q-text">${esc(q.text)}</div>
+      <ul class="opts">${optsHTML}</ul>`;
+    container.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+function onAnswer(qi) {
+  updateProgress();
+  document.getElementById('exam-err').style.display = 'none';
+}
+
+function updateProgress() {
+  let done = 0;
+  examQuestions.forEach((_, qi) => {
+    if (document.querySelector(`input[name="q${qi}"]:checked`)) done++;
+  });
+  document.getElementById('prog').style.width = (done / examQuestions.length * 100) + '%';
+}
+
+function submitExam() {
+  // Verificar que todas estén respondidas
+  let allDone = true;
+  examQuestions.forEach((_, qi) => {
+    if (!document.querySelector(`input[name="q${qi}"]:checked`)) allDone = false;
+  });
+  if (!allDone) {
+    const e = document.getElementById('exam-err');
+    e.style.display = 'block';
+    e.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Calcular resultado
+  let correct = 0;
+  const answers = examQuestions.map((q, qi) => {
+    const selIdx   = parseInt(document.querySelector(`input[name="q${qi}"]:checked`).value);
+    const selOpt   = q.shuffledOpts[selIdx];
+    const isCorrect = selOpt.ok;
+    if (isCorrect) correct++;
+    return {
+      question:    q.text,
+      selected:    selOpt.t,
+      isCorrect,
+      correctAnswer: q.opts.find(o => o.ok).t
+    };
+  });
+
+  const score = correct * 2;
+  const now   = new Date();
+  const result = {
+    name:      student.name,
+    career:    student.career,
+    score,
+    correct,
+    incorrect: examQuestions.length - correct,
+    date:  now.toLocaleDateString('es-AR'),
+    time:  now.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' }),
+    answers
+  };
+
+  saveResult(result);
+  showResult(result);
+}
+
+function showResult(result) {
+  const pct = Math.round(result.correct / 10 * 100);
+
+  document.getElementById('r-num').textContent = result.score;
+  document.getElementById('r-ok').textContent  = result.correct;
+  document.getElementById('r-bad').textContent = result.incorrect;
+  document.getElementById('r-pct').textContent = pct + '%';
+
+  const pass = result.score >= 10;
+  const msgs = [
+    { min: 18, msg: '¡Excelente! 🎉',  sub: 'Rendimiento sobresaliente.' },
+    { min: 14, msg: '¡Muy bien! 👍',   sub: 'Sólido desempeño en el examen.' },
+    { min: 10, msg: 'Aprobado ✓',       sub: 'Superaste el examen.' },
+    { min:  0, msg: 'No aprobado ✗',   sub: 'Te recomendamos repasar el material.' }
+  ];
+  const { msg, sub } = msgs.find(m => result.score >= m.min);
+  document.getElementById('r-msg').textContent = msg;
+  document.getElementById('r-sub').textContent = sub;
+
+  const circle = document.getElementById('r-circle');
+  circle.style.background = pass
+    ? 'linear-gradient(135deg,#43e97b,#38f9d7)'
+    : 'linear-gradient(135deg,#f093fb,#f5576c)';
+
+  // Revisión
+  document.getElementById('review-container').innerHTML = result.answers.map((a, i) => `
+    <div class="q-card" style="border-color:${a.isCorrect?'#48bb78':'#f56565'};background:${a.isCorrect?'#f0fff4':'#fff5f5'};margin-bottom:14px">
+      <div class="q-num" style="color:${a.isCorrect?'#276749':'#9b2c2c'}">${a.isCorrect?'✓ Correcta':'✗ Incorrecta'} · Pregunta ${i+1}</div>
+      <div class="q-text">${esc(a.question)}</div>
+      <div style="font-size:13px;line-height:1.5">
+        <div style="color:${a.isCorrect?'#276749':'#c53030'}"><strong>Tu respuesta:</strong> ${esc(a.selected)}</div>
+        ${!a.isCorrect?`<div style="color:#276749;margin-top:4px"><strong>Respuesta correcta:</strong> ${esc(a.correctAnswer)}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  go('s-result');
+}
+
+function resetStudent() {
+  document.getElementById('inp-name').value   = '';
+  document.getElementById('inp-career').value = '';
+  go('s-home');
+}
+
+// ── Flujo Docente ─────────────────────────────────────────────────
+function teacherLogin() {
+  const pass = document.getElementById('t-pass').value;
+  const err  = document.getElementById('t-err');
+
+  if (pass !== TEACHER_CODE) {
+    err.style.display = 'block';
+    document.getElementById('t-pass').value = '';
+    return;
+  }
+  err.style.display = 'none';
+  document.getElementById('t-pass').value = '';
+  showDashboard();
+}
+
+function teacherLogout() {
+  go('s-home');
+}
+
+function showDashboard() {
+  const results = getResults();
+  const cont = document.getElementById('dash-content');
+
+  if (results.length === 0) {
+    cont.innerHTML = `<div class="empty-state"><div class="ei">📋</div><p>Aún no hay resultados registrados.</p></div>`;
+  } else {
+    const avg    = results.reduce((s,r) => s + r.score, 0) / results.length;
+    const passed = results.filter(r => r.score >= 10).length;
+
+    const rows = results.map((r, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${esc(r.name)}</strong></td>
+        <td>${esc(r.career)}</td>
+        <td style="font-weight:700;font-size:15px">${r.score}/20</td>
+        <td>${r.correct}/10</td>
+        <td><span class="badge ${r.score>=10?'badge-ok':'badge-fail'}">${r.score>=10?'Aprobado':'Reprobado'}</span></td>
+        <td style="color:#a0aec0;font-size:12px">${esc(r.date)} ${esc(r.time)}</td>
+      </tr>`).join('');
+
+    cont.innerHTML = `
+      <div class="stats-row" style="margin-bottom:20px">
+        <div class="stat-box"><div class="stat-val">${results.length}</div><div class="stat-lbl">Alumnos</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:#48bb78">${passed}</div><div class="stat-lbl">Aprobados</div></div>
+        <div class="stat-box"><div class="stat-val">${avg.toFixed(1)}</div><div class="stat-lbl">Promedio</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="results-table">
+          <thead><tr>
+            <th>#</th><th>Nombre</th><th>Carrera</th>
+            <th>Puntaje</th><th>Correctas</th><th>Estado</th><th>Fecha / Hora</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
+  go('s-teacher-dash');
+}
+
+function downloadCSV() {
+  const results = getResults();
+  if (results.length === 0) { alert('No hay resultados para exportar.'); return; }
+
+  const headers = ['#','Nombre','Carrera','Puntaje','Correctas','Incorrectas','Estado','Fecha','Hora'];
+  const rows = results.map((r, i) => [
+    i + 1,
+    `"${r.name.replace(/"/g,'""')}"`,
+    `"${r.career.replace(/"/g,'""')}"`,
+    r.score,
+    r.correct,
+    r.incorrect,
+    r.score >= 10 ? 'Aprobado' : 'Reprobado',
+    r.date,
+    r.time
+  ]);
+
+  const csv  = [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `resultados_examen_ia_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function clearResults() {
+  if (results = getResults(), results.length === 0) { alert('No hay resultados para limpiar.'); return; }
+  if (confirm('¿Deseas borrar todos los resultados?\nEsta acción no se puede deshacer.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    showDashboard();
+  }
+}
+</script>
+</body>
+</html>

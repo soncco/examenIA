@@ -1,0 +1,146 @@
+[
+  {
+    "id": "9a45f3de-4e8b-405f-b017-802efaa8ef8d",
+    "name": "asd",
+    "career": "asdasd",
+    "score": 6,
+    "correct": 3,
+    "incorrect": 7,
+    "date": "28/3/2026",
+    "time": "05:52 p. m.",
+    "answers": [
+      {
+        "question": "Un Agente de IA puede 'agendar citas, enviar confirmaciones y actualizar calendarios automáticamente'. ¿Por qué no podría un Chatbot hacer esto?",
+        "selected": "Porque el Chatbot carece de un LLM potente.",
+        "isCorrect": false,
+        "correctAnswer": "Porque el Chatbot solo responde preguntas predefinidas sin ejecutar acciones en sistemas externos."
+      },
+      {
+        "question": "En la arquitectura del Modelo Transformer, ¿qué es la 'Tokenización'?",
+        "selected": "La transformación de texto en una imagen.",
+        "isCorrect": false,
+        "correctAnswer": "La división del texto fuente en unidades procesables (tokens)."
+      },
+      {
+        "question": "¿Cuál es la función del método POST en el contexto de las APIs que utilizan los agentes?",
+        "selected": "Envía información al servidor para crear registros, actualizar datos o ejecutar acciones.",
+        "isCorrect": true,
+        "correctAnswer": "Envía información al servidor para crear registros, actualizar datos o ejecutar acciones."
+      },
+      {
+        "question": "El principio ético de Transparencia en la IA implica:",
+        "selected": "Considerar el alto uso energético de los grandes modelos.",
+        "isCorrect": false,
+        "correctAnswer": "Asegurar que se pueda entender cómo decide un modelo."
+      },
+      {
+        "question": "Un Agente Automatizado se diferencia de un Agente Conversacional porque:",
+        "selected": "Interactúa directamente con humanos por WhatsApp o Instagram.",
+        "isCorrect": false,
+        "correctAnswer": "No requiere interacción directa y se activa por eventos (nuevo correo, horario) funcionando en segundo plano."
+      },
+      {
+        "question": "En el 'Flujo de Ejecución' de un Agente de IA, ¿cuál es el paso donde 'Comprueba la respuesta y reflexiona sobre el resultado'?",
+        "selected": "Planifica",
+        "isCorrect": false,
+        "correctAnswer": "Verifica"
+      },
+      {
+        "question": "¿Qué subcampo de la IA utiliza redes neuronales con muchas capas para tareas complejas como la detección de objetos?",
+        "selected": "Machine Learning (ML)",
+        "isCorrect": false,
+        "correctAnswer": "Deep Learning (DL)"
+      },
+      {
+        "question": "Un error común en prompting es...:",
+        "selected": "Iterar sobre la respuesta de la IA.",
+        "isCorrect": false,
+        "correctAnswer": "Ser ambiguo y dejar detalles sin especificar."
+      },
+      {
+        "question": "Para mejorar la relevancia y reducir errores en el output de la IA, la ingeniería de prompts recomienda:",
+        "selected": "Ser Específico, detallando la asignatura, el nivel o el formato esperado.",
+        "isCorrect": true,
+        "correctAnswer": "Ser Específico, detallando la asignatura, el nivel o el formato esperado."
+      },
+      {
+        "question": "¿Cuáles son los 'Tres Ingredientes Esenciales' que definen verdaderamente el diseño y potencial de un Agente de IA?",
+        "selected": "LLM, Memoria y Schemas",
+        "isCorrect": true,
+        "correctAnswer": "LLM, Memoria y Schemas"
+      }
+    ]
+  },
+  {
+    "id": "44e0c727-7590-4143-adf3-0c3adac4a77f",
+    "name": "dasd",
+    "career": "asdad",
+    "score": 8,
+    "correct": 4,
+    "incorrect": 6,
+    "date": "28/3/2026",
+    "time": "05:55 p. m.",
+    "answers": [
+      {
+        "question": "En el 'Flujo de Ejecución' de un Agente de IA, ¿cuál es el paso donde 'Comprueba la respuesta y reflexiona sobre el resultado'?",
+        "selected": "Verifica",
+        "isCorrect": true,
+        "correctAnswer": "Verifica"
+      },
+      {
+        "question": "Para mejorar la relevancia y reducir errores en el output de la IA, la ingeniería de prompts recomienda:",
+        "selected": "Ser Específico, detallando la asignatura, el nivel o el formato esperado.",
+        "isCorrect": true,
+        "correctAnswer": "Ser Específico, detallando la asignatura, el nivel o el formato esperado."
+      },
+      {
+        "question": "¿Cuál es la función del método POST en el contexto de las APIs que utilizan los agentes?",
+        "selected": "Envía información al servidor para crear registros, actualizar datos o ejecutar acciones.",
+        "isCorrect": true,
+        "correctAnswer": "Envía información al servidor para crear registros, actualizar datos o ejecutar acciones."
+      },
+      {
+        "question": "¿Cuáles son los 'Tres Ingredientes Esenciales' que definen verdaderamente el diseño y potencial de un Agente de IA?",
+        "selected": "Knowledge, Prompting y Tools",
+        "isCorrect": false,
+        "correctAnswer": "LLM, Memoria y Schemas"
+      },
+      {
+        "question": "Un Agente Automatizado se diferencia de un Agente Conversacional porque:",
+        "selected": "Interactúa directamente con humanos por WhatsApp o Instagram.",
+        "isCorrect": false,
+        "correctAnswer": "No requiere interacción directa y se activa por eventos (nuevo correo, horario) funcionando en segundo plano."
+      },
+      {
+        "question": "¿Qué subcampo de la IA utiliza redes neuronales con muchas capas para tareas complejas como la detección de objetos?",
+        "selected": "IA Débil (Estrecha)",
+        "isCorrect": false,
+        "correctAnswer": "Deep Learning (DL)"
+      },
+      {
+        "question": "Un Agente de IA puede 'agendar citas, enviar confirmaciones y actualizar calendarios automáticamente'. ¿Por qué no podría un Chatbot hacer esto?",
+        "selected": "Porque el Chatbot carece de un LLM potente.",
+        "isCorrect": false,
+        "correctAnswer": "Porque el Chatbot solo responde preguntas predefinidas sin ejecutar acciones en sistemas externos."
+      },
+      {
+        "question": "En la arquitectura del Modelo Transformer, ¿qué es la 'Tokenización'?",
+        "selected": "La generación de una respuesta coherente.",
+        "isCorrect": false,
+        "correctAnswer": "La división del texto fuente en unidades procesables (tokens)."
+      },
+      {
+        "question": "El principio ético de Transparencia en la IA implica:",
+        "selected": "Asegurar que se pueda entender cómo decide un modelo.",
+        "isCorrect": true,
+        "correctAnswer": "Asegurar que se pueda entender cómo decide un modelo."
+      },
+      {
+        "question": "Un error común en prompting es...:",
+        "selected": "Dar demasiado contexto.",
+        "isCorrect": false,
+        "correctAnswer": "Ser ambiguo y dejar detalles sin especificar."
+      }
+    ]
+  }
+]
